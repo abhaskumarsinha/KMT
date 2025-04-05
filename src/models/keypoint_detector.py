@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from src.models.utils import *
+from src.utils.model_utils import *
 
 
 class KeypointDetector(keras.layers.Layer):
