@@ -110,6 +110,9 @@ def train_motion_model(X, Y,
 
 
 def setup_keypoint_pipeline(
+    keypoint_detector,
+    generator,
+    discriminator_model,
     image_size=(256, 256, 1),
     batch_size=16,
     warmup_samples=500,
@@ -117,9 +120,6 @@ def setup_keypoint_pipeline(
     training_epochs=250,
     num_keypoints=10,
     learning_rate=1e-4,
-    keypoint_detector=None,
-    generator=None,
-    discriminator_model=None
 ):
     """
     Sets up a general training pipeline for keypoint-based image generation using GAN.
@@ -132,15 +132,6 @@ def setup_keypoint_pipeline(
         - Aligner (warmup model)
     """
 
-    # Instantiate keypoint detector and generator if not provided
-    if keypoint_detector is None:
-        keypoint_detector = KeypointDetector()
-
-    if generator is None:
-        generator = KeypointBasedTransform(batch_size=batch_size, target_size=image_size[:2])
-
-    if discriminator_model is None:
-        discriminator_model = build_discriminator(input_shape=image_size)
 
     # ------------------------------
     #   Warmup keypoint detector (align jacobians)
