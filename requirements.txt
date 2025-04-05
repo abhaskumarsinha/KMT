@@ -1,0 +1,7 @@
+numpy
+matplotlib
+tqdm
+tensorflow
+keras
+opencv-python
+imageio
