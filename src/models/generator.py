@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from src.utils.import *
+from src.utils import *
 
 
 class KeypointBasedTransform(keras.layers.Layer):
