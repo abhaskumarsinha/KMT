@@ -110,39 +110,56 @@ def train_motion_model(X, Y,
 
 
 def setup_keypoint_pipeline(
-    keypoint_detector,
-    generator,
-    discriminator_model,
     image_size=(256, 256, 1),
     batch_size=16,
+    warmup_samples=500,
+    warmup_epochs=10,
     training_epochs=250,
     num_keypoints=10,
-    learning_rate=1e-4
+    learning_rate=1e-4,
+    keypoint_detector=None,
+    generator=None,
+    discriminator_model=None
 ):
     """
-    Sets up a general training pipeline for keypoint-based image generation using a GAN architecture.
-
-    Args:
-        keypoint_detector (keras.Model): A model that detects keypoints from images.
-        generator (keras.Model): A keypoint-based image generator (e.g., KeypointBasedTransform).
-        discriminator_model (keras.Model): Discriminator network to distinguish real from fake images.
-        image_size (tuple): Shape of the input images. Default is (256, 256, 1).
-        batch_size (int): Training batch size. Default is 16.
-        training_epochs (int): Number of epochs for training. Default is 250.
-        num_keypoints (int): Number of keypoints to detect. Default is 10.
-        learning_rate (float): Learning rate for all optimizers. Default is 1e-4.
+    Sets up a general training pipeline for keypoint-based image generation using GAN.
 
     Returns:
-        dict: {
-            "gan": GAN model,
-            "generator_model": Full generator training model,
-            "keypoint_detector": Keypoint detector model,
-            "discriminator": Discriminator model
-        }
+        - GAN model
+        - Generator model
+        - Keypoint detector
+        - Discriminator
+        - Aligner (warmup model)
     """
 
+    # Instantiate keypoint detector and generator if not provided
+    if keypoint_detector is None:
+        keypoint_detector = KeypointDetector()
+
+    if generator is None:
+        generator = KeypointBasedTransform(batch_size=batch_size, target_size=image_size[:2])
+
+    if discriminator_model is None:
+        discriminator_model = build_discriminator(input_shape=image_size)
+
     # ------------------------------
-    #   Set up Generator pipeline
+    #   Warmup keypoint detector (align jacobians)
+    # ------------------------------
+    kp_input = keras.Input(shape=image_size)
+    kp_output = keypoint_detector(kp_input)
+    kp_aligner = keras.Model(inputs=kp_input, outputs=kp_output[1])
+    kp_aligner.compile(optimizer='adam', loss='mse')
+
+    # Dummy warmup training
+    kp_aligner.fit(
+        keras.random.normal((warmup_samples, *image_size)),
+        generate_identity_jacobians(warmup_samples, num_keypoints),
+        batch_size=50,
+        epochs=warmup_epochs
+    )
+
+    # ------------------------------
+    #   Set up GAN pipeline
     # ------------------------------
     src_input = keras.Input(shape=image_size)
     drv_input = keras.Input(shape=image_size)
@@ -159,27 +176,22 @@ def setup_keypoint_pipeline(
         run_eagerly=False
     )
 
-    # ------------------------------
-    #   Discriminator setup
-    # ------------------------------
     discriminator_model.compile(
         optimizer=keras.optimizers.Adam(learning_rate),
         loss='binary_crossentropy',
         run_eagerly=False
     )
 
-    # ------------------------------
-    #   GAN pipeline
-    # ------------------------------
-    gan_output = discriminator_model(generator((src_input, src_kp[0], src_kp[1], drv_kp[0], drv_kp[1])))
-    gan_model = keras.Model(inputs=[src_input, drv_input], outputs=gan_output)
+    # GAN pipeline with frozen discriminator
+    disc_out = discriminator_model(generator((src_input, src_kp[0], src_kp[1], drv_kp[0], drv_kp[1])))
+    gan_model = keras.Model(inputs=[src_input, drv_input], outputs=disc_out)
     gan_model.compile(
         optimizer=keras.optimizers.Adam(learning_rate),
         loss='binary_crossentropy',
         run_eagerly=False
     )
 
-    # Debug summaries
+    # Debugging summaries
     print("\n🧱 GAN Summary:")
     gan_model.summary()
     print("\n🧱 Generator Backbone Summary:")
@@ -191,5 +203,6 @@ def setup_keypoint_pipeline(
         "gan": gan_model,
         "generator_model": generator_model,
         "keypoint_detector": keypoint_detector,
-        "discriminator": discriminator_model
+        "discriminator": discriminator_model,
+        "aligner": kp_aligner
     }
