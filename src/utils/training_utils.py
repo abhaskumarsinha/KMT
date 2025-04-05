@@ -110,34 +110,36 @@ def train_motion_model(X, Y,
 
 
 def setup_keypoint_pipeline(
+    keypoint_detector,
+    generator,
+    discriminator_model,
     image_size=(256, 256, 1),
     batch_size=16,
     training_epochs=250,
     num_keypoints=10,
-    learning_rate=1e-4,
-    keypoint_detector=None,
-    generator=None,
-    discriminator_model=None
+    learning_rate=1e-4
 ):
     """
-    Sets up a general training pipeline for keypoint-based image generation using GAN.
+    Sets up a general training pipeline for keypoint-based image generation using a GAN architecture.
+
+    Args:
+        keypoint_detector (keras.Model): A model that detects keypoints from images.
+        generator (keras.Model): A keypoint-based image generator (e.g., KeypointBasedTransform).
+        discriminator_model (keras.Model): Discriminator network to distinguish real from fake images.
+        image_size (tuple): Shape of the input images. Default is (256, 256, 1).
+        batch_size (int): Training batch size. Default is 16.
+        training_epochs (int): Number of epochs for training. Default is 250.
+        num_keypoints (int): Number of keypoints to detect. Default is 10.
+        learning_rate (float): Learning rate for all optimizers. Default is 1e-4.
 
     Returns:
-        - GAN model
-        - Generator model
-        - Keypoint detector
-        - Discriminator
+        dict: {
+            "gan": GAN model,
+            "generator_model": Full generator training model,
+            "keypoint_detector": Keypoint detector model,
+            "discriminator": Discriminator model
+        }
     """
-
-    # Instantiate components if not provided
-    if keypoint_detector is None:
-        keypoint_detector = KeypointDetector()
-
-    if generator is None:
-        generator = KeypointBasedTransform(batch_size=batch_size, target_size=image_size[:2])
-
-    if discriminator_model is None:
-        discriminator_model = build_discriminator(input_shape=image_size)
 
     # ------------------------------
     #   Set up Generator pipeline
@@ -191,4 +193,3 @@ def setup_keypoint_pipeline(
         "keypoint_detector": keypoint_detector,
         "discriminator": discriminator_model
     }
-
