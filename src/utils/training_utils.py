@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
+from src.models.discriminator import *
+from src.models.generator import *
+from src.models.keypoint_detector import *
+
 def generate_identity_jacobians(batch, num_kp):
     """
     Generate a batch of identity Jacobian matrices for keypoints.
