@@ -104,3 +104,87 @@ def train_motion_model(X, Y,
 
     print("Training complete.")
 
+
+def setup_keypoint_pipeline(
+    image_size=(256, 256, 1),
+    batch_size=16,
+    training_epochs=250,
+    num_keypoints=10,
+    learning_rate=1e-4,
+    keypoint_detector=None,
+    generator=None,
+    discriminator_model=None
+):
+    """
+    Sets up a general training pipeline for keypoint-based image generation using GAN.
+
+    Returns:
+        - GAN model
+        - Generator model
+        - Keypoint detector
+        - Discriminator
+    """
+
+    # Instantiate components if not provided
+    if keypoint_detector is None:
+        keypoint_detector = KeypointDetector()
+
+    if generator is None:
+        generator = KeypointBasedTransform(batch_size=batch_size, target_size=image_size[:2])
+
+    if discriminator_model is None:
+        discriminator_model = build_discriminator(input_shape=image_size)
+
+    # ------------------------------
+    #   Set up Generator pipeline
+    # ------------------------------
+    src_input = keras.Input(shape=image_size)
+    drv_input = keras.Input(shape=image_size)
+
+    src_kp = keypoint_detector(src_input)
+    drv_kp = keypoint_detector(drv_input)
+
+    gen_out = generator((src_input, src_kp[0], src_kp[1], drv_kp[0], drv_kp[1]))
+
+    generator_model = keras.Model(inputs=[src_input, drv_input], outputs=gen_out)
+    generator_model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate),
+        loss='mse',
+        run_eagerly=False
+    )
+
+    # ------------------------------
+    #   Discriminator setup
+    # ------------------------------
+    discriminator_model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate),
+        loss='binary_crossentropy',
+        run_eagerly=False
+    )
+
+    # ------------------------------
+    #   GAN pipeline
+    # ------------------------------
+    gan_output = discriminator_model(generator((src_input, src_kp[0], src_kp[1], drv_kp[0], drv_kp[1])))
+    gan_model = keras.Model(inputs=[src_input, drv_input], outputs=gan_output)
+    gan_model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate),
+        loss='binary_crossentropy',
+        run_eagerly=False
+    )
+
+    # Debug summaries
+    print("\n🧱 GAN Summary:")
+    gan_model.summary()
+    print("\n🧱 Generator Backbone Summary:")
+    generator.model.summary()
+    print("\n🧱 Generator Upscaler Summary:")
+    generator.upscaler.summary()
+
+    return {
+        "gan": gan_model,
+        "generator_model": generator_model,
+        "keypoint_detector": keypoint_detector,
+        "discriminator": discriminator_model
+    }
+
