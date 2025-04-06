@@ -8,11 +8,12 @@ from src.utils import *
 
 
 class KeypointBasedTransform(keras.layers.Layer):
-    def __init__(self, batch_size, target_size=(60, 60), model=None, upscaler=None, **kwargs):
+    def __init__(self, batch_size, target_size=(60, 60), num_keypoints = 10, model=None, upscaler=None, **kwargs):
         """
         Args:
             batch_size (int): Default training batch size.
             target_size (tuple): Target resolution for feature processing (H, W).
+            num_keypoints (int): Number of keypoints Keypoint Detector outputs. (Default: 10)
             model (tf.keras.Model or tf.keras.Layer, optional): Custom motion prediction model.
             upscaler (tf.keras.Model or tf.keras.Layer, optional): Custom upscaling model.
         """
@@ -20,6 +21,7 @@ class KeypointBasedTransform(keras.layers.Layer):
         self.batch_size = batch_size
         self.target_size = target_size
         self.height, self.width = target_size
+        self.num_keypoints = num_keypoints
 
         self.resize_layer = keras.layers.Resizing(self.height, self.width, interpolation="bilinear")
 
@@ -33,7 +35,7 @@ class KeypointBasedTransform(keras.layers.Layer):
             keras.layers.Conv2D(11, 1, activation="linear")
         ])
 
-        self.mask = keras.layers.Conv2D(11, 3, padding="same", activation="relu")
+        self.mask = keras.layers.Conv2D(self.num_keypoints + 1, 3, padding="same", activation="relu")
         self.occlusion = keras.layers.Conv2D(1, 3, padding="same", activation="relu")
 
         # Default upscaler
