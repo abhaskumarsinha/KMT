@@ -28,8 +28,6 @@ Usage Example:
 from src.models.discriminator import build_discriminator
 from src.models.generator import KeypointBasedTransform
 from src.models.keypoint_detector import KeypointDetector
-```
-"""
 
 # Discriminator model
 discriminator = build_discriminator()
@@ -39,3 +37,6 @@ transform_layer = KeypointBasedTransform(batch_size=16)
 
 # Keypoint detector layer
 kp_detector = KeypointDetector(num_keypoints=10)
+
+```
+"""
