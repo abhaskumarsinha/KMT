@@ -45,7 +45,8 @@ def train_motion_model(X, Y,
                        batch_size=16,
                        epochs=10,
                        save_path='./working',
-                       preview=True):
+                       preview=True,
+                       preview_interval=50):  # new argument added
     """
     Trains the generator and GAN model using the provided datasets.
 
@@ -59,6 +60,7 @@ def train_motion_model(X, Y,
         epochs (int): Number of training epochs.
         save_path (str): Path to save model weights.
         preview (bool): Whether to show output images during training.
+        preview_interval (int): Interval (in epochs) at which preview and saving occur.
     """
     total_inst = (Y.shape[0] - 1) // batch_size * batch_size
     X0, X1 = X[0][:total_inst], X[1][:total_inst]
@@ -94,20 +96,19 @@ def train_motion_model(X, Y,
             loss_fake = gan_model.train_on_batch((x_batch_0, x_batch_1), keras.ops.zeros((batch_size, 1)))
             print('GAN Loss (D):', loss_fake)
 
-        # Visualization after each epoch
-        if preview:
-            pred = generator((x_batch_0, x_batch_1))[0, ..., 0]
-            plt.imshow(pred, cmap='gray')
-            plt.title(f"Epoch {epoch + 1}")
-            plt.axis('off')
-            plt.show()
+        # Execute preview and saving only every `preview_interval` epochs
+        if (epoch + 1) % preview_interval == 0:
+            if preview:
+                pred = generator((x_batch_0, x_batch_1))[0, ..., 0]
+                plt.imshow(pred, cmap='gray')
+                plt.title(f"Epoch {epoch + 1}")
+                plt.axis('off')
+                plt.show()
 
-        # Save model weights
-        generator.save_weights(f'{save_path}/generator.weights.h5')
-        gan_model.save_weights(f'{save_path}/GAN.weights.h5')
+            generator.save_weights(f'{save_path}/generator.weights.h5')
+            gan_model.save_weights(f'{save_path}/GAN.weights.h5')
 
     print("Training complete.")
-
 
 def setup_keypoint_pipeline(
     keypoint_detector,
