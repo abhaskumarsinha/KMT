@@ -47,7 +47,7 @@ class KeypointBasedTransform(keras.layers.Layer):
             keras.layers.UpSampling2D(size=2),
             keras.layers.Conv2D(256, 3, padding="same", activation="tanh"),
             keras.layers.Conv2D(32, 3, padding="same", activation="relu"),
-            keras.layers.Conv2D(1, 3, padding="same", activation="linear"),
+            keras.layers.Conv2D(1, 3, padding="same", activation="sigmoid"),
             keras.layers.Resizing(256, 256, interpolation="bilinear")
         ])
 
