@@ -68,12 +68,6 @@ Check [example.ipynb](https://www.github.com/abhaskumarsinha/KMT/example.ipynb) 
 # Example Results
 ## Original Frame
 ![Original Frame](https://github.com/user-attachments/assets/8090b67c-caf7-48f1-99a2-e60e092e29d2)
-## Output
-![Animation Output](https://github.com/user-attachments/assets/e6f2c0f0-a475-4a28-a649-ed7265cbef26)
-## Transformation Map
-![transformation](https://github.com/user-attachments/assets/b4a334f8-94dd-4e0d-a0c3-e2d6a2efe2bb)
-## Flow Map
-![flow](https://github.com/user-attachments/assets/e69e4858-1296-4594-bfa9-4551747b0e9c)
 ## Grid Preview
 ![Grid Preview](https://github.com/user-attachments/assets/e147abde-4273-4ba8-98de-837f14e13173)
 
