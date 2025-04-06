@@ -113,6 +113,7 @@ def train_motion_model(X, Y,
                 plt.imshow(pred, cmap='gray')
                 plt.title(f"Epoch {epoch + 1}")
                 plt.axis('off')
+                plt.show()
                 plt.savefig(os.path.join(image_dir, f"epoch_{epoch + 1}.png"))
                 plt.close()
 
