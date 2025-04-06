@@ -3,6 +3,7 @@ import keras.ops as ops
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import os
 
 from src.models.discriminator import *
 from src.models.generator import *
@@ -80,30 +81,41 @@ def train_motion_model(X, Y,
 
             # Train discriminator to distinguish real vs fake
             loss_real = discriminator.train_on_batch(x_batch_1, keras.ops.zeros((batch_size, 1)))
-            print('Discriminator Loss (real):', loss_real)
+            
 
             # Freeze discriminator for generator adversarial training
             gan_model.trainable = False
             gan_model.layers[-1].trainable = True
 
             loss_gen = gan_model.train_on_batch((x_batch_0, x_batch_1), keras.ops.ones((batch_size, 1)))
-            print('GAN Loss (G):', loss_gen)
-
+            
             # Re-enable discriminator for adversarial step
             gan_model.trainable = True
             gan_model.layers[-1].trainable = False
 
             loss_fake = gan_model.train_on_batch((x_batch_0, x_batch_1), keras.ops.zeros((batch_size, 1)))
-            print('GAN Loss (D):', loss_fake)
+            
 
         # Execute preview and saving only every `preview_interval` epochs
         if (epoch) % preview_interval == 0:
+            print('Discriminator Loss (real):', loss_real)
+            print('GAN Loss (G):', loss_gen)
+            print('GAN Loss (D):', loss_fake)
+
+            
             if preview:
+                # Create directory for images if it does not exist
+                
+                image_dir = os.path.join(save_path, "images")
+                os.makedirs(image_dir, exist_ok=True)
+                
                 pred = generator((x_batch_0, x_batch_1))[0, ..., 0]
                 plt.imshow(pred, cmap='gray')
                 plt.title(f"Epoch {epoch + 1}")
                 plt.axis('off')
-                plt.show()
+                plt.savefig(os.path.join(image_dir, f"epoch_{epoch + 1}.png"))
+                plt.close()
+
 
             generator.save_weights(f'{save_path}/generator.weights.h5')
             gan_model.save_weights(f'{save_path}/GAN.weights.h5')
