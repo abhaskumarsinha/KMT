@@ -8,27 +8,39 @@ from src.utils import *
 
 
 class KeypointDetector(keras.layers.Layer):
-    def __init__(self, num_keypoints=10, **kwargs):
+    def __init__(self, num_keypoints=10, keypoint_branch=None, jacobian_branch=None, **kwargs):
         """
         Layer for detecting keypoints and local Jacobian transformations.
-
+    
         Args:
             num_keypoints (int): Number of keypoints to detect.
+            keypoint_branch (keras.Model or None): Optional custom model for keypoint detection.
+                If None, a default convolutional branch will be used.
+            jacobian_branch (keras.Model or None): Optional custom model for Jacobian prediction.
+                If None, a default convolutional branch will be used.
+            **kwargs: Additional keyword arguments passed to the parent class.
         """
         super().__init__(**kwargs)
         self.num_keypoints = num_keypoints
+    
+        if keypoint_branch is None:
+            self.keypoint_branch = keras.Sequential([
+                keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
+                keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
+                keras.layers.Conv2D(num_keypoints, 3, strides=1, activation=None, padding='same'),
+            ])
+        else:
+            self.keypoint_branch = keypoint_branch
+    
+        if jacobian_branch is None:
+            self.jacobian_branch = keras.Sequential([
+                keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
+                keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
+                keras.layers.Conv2D(4 * num_keypoints, 3, strides=1, activation=None, padding='same'),
+            ])
+        else:
+            self.jacobian_branch = jacobian_branch
 
-        self.keypoint_branch = keras.Sequential([
-            keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
-            keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
-            keras.layers.Conv2D(num_keypoints, 3, strides=1, activation=None, padding='same'),
-        ])
-
-        self.jacobian_branch = keras.Sequential([
-            keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
-            keras.layers.Conv2D(32, 3, strides=2, activation='relu', padding='same'),
-            keras.layers.Conv2D(4 * num_keypoints, 3, strides=1, activation=None, padding='same'),
-        ])
 
     def call(self, inputs):
         """
