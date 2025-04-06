@@ -68,9 +68,9 @@ def train_motion_model(X, Y,
 
     generator.layers[-1].batch_size = batch_size
 
-    for epoch in range(epochs):
+    for epoch in tqdm(range(epochs), desc="Epochs"):
         print(f"Epoch {epoch + 1}/{epochs}")
-        for batch_number in tqdm(range(0, total_inst, batch_size), desc="Batches"):
+        for batch_number in range(0, total_inst, batch_size):
             x_batch_0 = X0[batch_number: batch_number + batch_size]
             x_batch_1 = X1[batch_number: batch_number + batch_size]
             y_batch = Y[batch_number: batch_number + batch_size]
@@ -97,7 +97,7 @@ def train_motion_model(X, Y,
             print('GAN Loss (D):', loss_fake)
 
         # Execute preview and saving only every `preview_interval` epochs
-        if (epoch + 1) % preview_interval == 0:
+        if (epoch) % preview_interval == 0:
             if preview:
                 pred = generator((x_batch_0, x_batch_1))[0, ..., 0]
                 plt.imshow(pred, cmap='gray')
