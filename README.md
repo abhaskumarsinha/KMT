@@ -66,10 +66,13 @@ Check [example.ipynb](https://www.github.com/abhaskumarsinha/KMT/example.ipynb) 
 - Modular and clean codebase for easy debugging and rapid experimentation
 
 # Example Results
-## Original Frame
-![Original Frame](https://github.com/user-attachments/assets/8090b67c-caf7-48f1-99a2-e60e092e29d2)
 ## Grid Preview
 ![Grid Preview](https://github.com/user-attachments/assets/e147abde-4273-4ba8-98de-837f14e13173)
+## Example first frame
+![first_frame](https://github.com/user-attachments/assets/c212af72-ecab-43ee-84c8-ecd260d5a696)
+## Example Motion Transfer
+![vox_animation (1)](https://github.com/user-attachments/assets/bbac305c-0349-4733-b209-26b3d603b3ca)
+
 
 
 
