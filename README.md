@@ -71,7 +71,8 @@ Check [example.ipynb](https://github.com/abhaskumarsinha/KMT/blob/main/example.i
 ## Example first frame
 ![first_frame](https://github.com/user-attachments/assets/c212af72-ecab-43ee-84c8-ecd260d5a696)
 ## Example Motion Transfer
-![vox_animation (1)](https://github.com/user-attachments/assets/bbac305c-0349-4733-b209-26b3d603b3ca)
+![Vox Animated](https://github.com/user-attachments/assets/57aa9890-2e0c-4e67-87c2-eb68f16e7444)
+
 
 
 
