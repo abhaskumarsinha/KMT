@@ -7,7 +7,7 @@
 
 ![Keras Motion Transfer](https://github.com/user-attachments/assets/add57cc8-647e-4957-97a0-63ea638e585b)
 
-[`[Keras]`](https://keras.io/) . [`[First Order Animation]`](https://aliaksandrsiarohin.github.io/first-order-model-website/) . [`[Notebook]`](https://www.github.com/abhaskumarsinha/KMT/example.ipynb) . [`[Logo]`](https://logo.com/) . [`[Vox Dataset]`](https://github.com/AliaksandrSiarohin/video-preprocessing)
+[`[Keras]`](https://keras.io/) . [`[First Order Animation]`](https://aliaksandrsiarohin.github.io/first-order-model-website/) . [`[Notebook]`](https://github.com/abhaskumarsinha/KMT/blob/main/example.ipynb) . [`[Logo]`](https://logo.com/) . [`[Vox Dataset]`](https://github.com/AliaksandrSiarohin/video-preprocessing)
 
 
 A Keras-based motion transfer model leveraging first-order Jacobian-based motion estimation to animate a static image using keypoints, inspired by Aliaksandr Siarohin's first-order motion model.
@@ -52,7 +52,7 @@ KMT consists of two core components:
 pip install -r requirements. txt
 ```
 ## Getting Started
-Check [example.ipynb](https://www.github.com/abhaskumarsinha/KMT/example.ipynb) notebook to get started.
+Check [example.ipynb](https://github.com/abhaskumarsinha/KMT/blob/main/example.ipynb) notebook to get started.
 
 # 🚀 Features
 - Supports video dataloading for training and inference
