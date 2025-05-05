@@ -72,6 +72,9 @@ Check [example.ipynb](https://github.com/abhaskumarsinha/KMT/blob/main/example.i
 ![first_frame](https://github.com/user-attachments/assets/c212af72-ecab-43ee-84c8-ecd260d5a696)
 ## Example Motion Transfer
 ![Vox Animated](https://github.com/user-attachments/assets/57aa9890-2e0c-4e67-87c2-eb68f16e7444)
+## Example Notebook output
+![7fd85b61-905a-4b9c-8ffc-484385e85886](https://github.com/user-attachments/assets/baacab83-5f6e-465a-9bad-0d5a61188fc0)
+
 
 
 
